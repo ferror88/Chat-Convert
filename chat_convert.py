@@ -1,6 +1,6 @@
 import re
 
-def convertir_whatsapp_a_md(ruta_txt, ruta_md, carpeta_multimedia="F:/Descargas/perreria/docs/", nombre_grupo="Grupo de vídeos"):
+def convertir_whatsapp_a_md(ruta_txt, ruta_md, carpeta_docs="docs", nombre_grupo="Grupo de vídeos"):
     try:
         with open(ruta_txt, 'r', encoding='utf-8') as f:
             whatsapp_text = f.read()
@@ -10,7 +10,6 @@ def convertir_whatsapp_a_md(ruta_txt, ruta_md, carpeta_multimedia="F:/Descargas/
 
     lines = whatsapp_text.strip().split('\n')
     
-    # Meses en español manuales para evitar que salgan en inglés
     months_es = {
         "1": "enero", "2": "febrero", "3": "marzo", "4": "abril", "5": "mayo", "6": "junio",
         "7": "julio", "8": "agosto", "9": "septiembre", "10": "octubre", "11": "noviembre", "12": "diciembre"
@@ -27,9 +26,7 @@ def convertir_whatsapp_a_md(ruta_txt, ruta_md, carpeta_multimedia="F:/Descargas/
     ]
 
     current_date_str = ""
-    
-    # Patrón tolerante a caracteres invisibles de WhatsApp al inicio de línea (\u200e, \u200f)
-    pattern = re.compile(r'^[\u200e\u200f]?(\d{1,2})/(\d{1,2})/(\d{2,4}),\s+(\d{2}:\d{2})\s+-\s+(.*)$')
+    pattern = re.compile(r'^[‎‏]?(\d{1,2})/(\d{1,2})/(\d{2,4}),\s+(\d{2}:\d{2})\s+-\s+(.*)$')
 
     for line in lines:
         match = pattern.match(line)
@@ -49,7 +46,6 @@ def convertir_whatsapp_a_md(ruta_txt, ruta_md, carpeta_multimedia="F:/Descargas/
                 md_lines.append(f"## {formatted_date}")
                 md_lines.append("")
                 
-            # Limpiar caracteres invisibles dentro del contenido
             content = content.replace('\u200e', '').strip()
                 
             if ":" in content:
@@ -57,12 +53,9 @@ def convertir_whatsapp_a_md(ruta_txt, ruta_md, carpeta_multimedia="F:/Descargas/
                 sender = sender.strip()
                 msg = msg.strip()
                 
-                # Detectar si es una imagen o archivo adjunto multimedia
-                if "(archivo adjunto)" in msg or msg.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.gif', '.mp4')):
+                if "(archivo adjunto)" in msg or msg.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.gif', '.mp4', '.opus')):
                     nombre_archivo = msg.replace("(archivo adjunto)", "").strip()
-                    md_lines.append(f"[{time_str}] **{sender}:**")
-                    md_lines.append(f"![{nombre_archivo}]({carpeta_multimedia}/{nombre_archivo})")
-                    md_lines.append("")
+                    md_lines.append(f"[{time_str}] **{sender}:** ![{nombre_archivo}]({carpeta_docs}/{nombre_archivo})")
                 else:
                     md_lines.append(f"[{time_str}] **{sender}:** {msg}")
             else:
@@ -70,7 +63,7 @@ def convertir_whatsapp_a_md(ruta_txt, ruta_md, carpeta_multimedia="F:/Descargas/
 
     with open(ruta_md, 'w', encoding='utf-8') as f:
         f.write('\n'.join(md_lines))
-    print(f"¡Archivo '{ruta_md}' generado con éxito!")
+    print(f"¡Archivo '{ruta_md}' generado apuntando correctamente a la carpeta '{carpeta_docs}'!")
 
 if __name__ == "__main__":
-    convertir_whatsapp_a_md("Chat de WhatsApp con Grupo.txt", "exportacion_chat_v2.md")
+    convertir_whatsapp_a_md("Chat de WhatsApp con Grupo.txt", "exportacion_chat.md", carpeta_docs="docs")
