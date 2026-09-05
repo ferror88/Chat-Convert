@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 def convertir_whatsapp_a_md(ruta_txt, ruta_md, carpeta_docs="docs", nombre_grupo="Grupo de vídeos"):
     try:
@@ -15,7 +16,6 @@ def convertir_whatsapp_a_md(ruta_txt, ruta_md, carpeta_docs="docs", nombre_grupo
         "7": "julio", "8": "agosto", "9": "septiembre", "10": "octubre", "11": "noviembre", "12": "diciembre"
     }
     
-    from datetime import datetime
     ahora = datetime.now()
     export_date = f"{ahora.day} de {months_es[str(ahora.month)]} de {ahora.year} a las {ahora.strftime('%H:%M')}"
 
